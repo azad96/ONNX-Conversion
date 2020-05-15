@@ -2,15 +2,15 @@ import onnx
 import onnxruntime
 import numpy as np
 import torch
-from model import Model
+from model import Model # model.py is where Model class is defined
+
+onnxfile = "filename.onnx"
+weight_file = "weight_file.pth"
 
 
 def to_numpy(tensor):
     return tensor.detach().cpu().numpy() if tensor.requires_grad else tensor.cpu().numpy()
 
-
-onnxfile = "filename.onnx"
-weight_file = "weight_file.pth"
 
 model = Model()
 map_location = (lambda storage, loc:storage)
@@ -36,4 +36,5 @@ ort_outs = ort_session.run(None, ort_inputs)
 
 # compare ONNX Runtime and PyTorch results
 np.testing.assert_allclose(to_numpy(res), ort_outs[0], rtol=1e-03, atol=1e-05)
+print('The outputs are same.')
 

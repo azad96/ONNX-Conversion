@@ -1,18 +1,19 @@
+import onnx
+from onnx import optimizer
+import torch
 from sys import argv
+from model import Model # model.py is where Model class is defined
 
 onnxfile = "filename.onnx"
 weight_file = "weight_file.pth"
 
 def export():
-    import torch
-    from model import Model # model.py is where Model class is defined
-    
     model = Model()
     map_location = (lambda storage, loc:storage)
-	if torch.cuda.is_available():
-	    map_location = None
-	ckpt = torch.load(weight_file, map_location=map_location)
-	model.load_state_dict(ckpt)
+    if torch.cuda.is_available():
+        map_location = None
+    ckpt = torch.load(weight_file, map_location=map_location)
+    model.load_state_dict(ckpt)
     model.eval()
 
     dummy_input = torch.randn(1, 3, 224, 224)
@@ -24,14 +25,13 @@ def export():
                     output_names=output_names,
                     verbose=True,
                     opset_version=11,
-                    # keep_initializers_as_inputs=True,
+                    keep_initializers_as_inputs=True,
                     export_params=True)
 
     print('Exported.')
 
+
 def optimize():
-    import onnx
-    from onnx import optimizer
     model = onnx.load(onnxfile)
     onnx.checker.check_model(model)
     print('Checked.')
