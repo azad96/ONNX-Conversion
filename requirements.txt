@@ -1,4 +1,4 @@
 torch==1.4.0
 torchvision==0.5.0
-onnx==1.13.0
+onnx==1.16.2
 onnxruntime==1.2.0
